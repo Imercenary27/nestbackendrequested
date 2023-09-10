@@ -6,7 +6,8 @@ import { RegistryService } from './registry.service';
 import { RabbitMQService } from 'rabbitmq/rabbitmq';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CameraInput, CameraInputScehma } from 'src/schema/camera.schema';
-import { FaceData, FaceDataScehma } from 'src/schema/facedata.schema';
+import { Fregis, FaceDataScehma } from 'src/schema/facedata.schema';
+import { Facify, FacifyScehma } from 'src/schema/newface.schema';
 
 
 @Module({
@@ -20,9 +21,13 @@ import { FaceData, FaceDataScehma } from 'src/schema/facedata.schema';
         schema:CameraInputScehma
       }]),
       MongooseModule.forFeature([{
-      name: FaceData.name, 
+      name: Fregis.name, 
       schema:FaceDataScehma
       }]),  
+      MongooseModule.forFeature([{
+        name: Facify.name, 
+        schema:FacifyScehma
+        }]),
         ClientsModule.register([
             {
               name: 'number_service',

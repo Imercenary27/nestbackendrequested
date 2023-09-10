@@ -8,8 +8,10 @@ import { VehicleDTO, VehicleData } from '../dto/newreg.dto';
 import { numberplate } from 'src/dto/numberplate.dto';
 import { PythonRequestDto } from 'src/dto/pythonapi.dto';
 import { CAMERAINPUT_MODEL, CameraInputDocument } from 'src/schema/camera.schema';
-import { FACEDATA_MODEL, FaceData, FaceDataDocument } from 'src/schema/facedata.schema';
+import { FACEDATA_MODEL, Fregis, FaceDataDocument } from 'src/schema/facedata.schema';
 import { faceData } from 'src/dto/face.dto';
+import { newfaceDto } from 'src/dto/newFace.dto';
+import { Facify, FacifyDocument, Facify_MODEL } from 'src/schema/newface.schema';
 
 
 @Injectable()
@@ -17,8 +19,9 @@ export class RegistryService {
   constructor(
     @InjectModel(REGISTRATION_MODEL) private readonly newModel: Model<RegistrationDocument>,
     @InjectModel(CAMERAINPUT_MODEL) private readonly camera: Model<CameraInputDocument>,
-    @InjectModel(FACEDATA_MODEL) private readonly face: Model<FaceDataDocument>,
-    
+    @InjectModel(FACEDATA_MODEL) private readonly faceModel: Model<FaceDataDocument>,
+    @InjectModel(Facify_MODEL) private readonly newFaceModel: Model<FacifyDocument>,
+
     private readonly rabbitMQService: RabbitMQService,
     
     ) {}
@@ -44,9 +47,27 @@ export class RegistryService {
        registrationDate: today,
        data:request.data 
     }
-    return this.newModel.create(createPayload)
-    
+    return this.newModel.create(createPayload) 
   }
+
+  async addNewFace(request :newfaceDto):Promise <Facify>{
+    try {
+      const today = new Date();
+      const createPayload = {
+          recId: request.recId,
+          criminalId: request.criminalId,
+          recordName: request.recordName,
+          Department: request.Department,
+          Message: "done"
+      };
+      
+      const result = await this.newFaceModel.create(createPayload);
+      return result;
+  } catch (error) {
+      console.error("Error while adding new face:", error);
+      throw error; // Rethrow the error for higher-level handling
+  }  }
+
 
   async findCarByNumber(request:numberplate){
    const details=this.newModel.findOne(request)
@@ -73,13 +94,16 @@ export class RegistryService {
     return details;
     
   }
+  async addNewFaceDb(){
+    return this.newFaceModel.find()
+  }
   async displayAllCars(){
     const displayAll=this.newModel.find()
     return displayAll;
   }
 
-  async criminalDataSearch({RCstatus:boolean}){
-    const criminal= this.newModel.find({RCstatus:false})
+  async criminalDataSearch({rcStatus:boolean}){
+    const criminal= this.newModel.find({rcStatus:false})
     return criminal;
   }
   async countFalseValues(): Promise<number> {
@@ -87,7 +111,7 @@ export class RegistryService {
     return count;
   }
   async counttrueValues(): Promise<number> {
-    const count = await this.newModel.countDocuments({ RCstatus: true }).exec();
+    const count = await this.newModel.countDocuments({ rcStatus: true }).exec();
     return count;
   }
 
@@ -97,23 +121,24 @@ export class RegistryService {
   }
 
   async findOneFromCameraInput(request :numberplate) {
-    const lookfor =await this.camera.findOne({registrationNo:request})
+    const lookfor = this.camera.findOne({registrationNo:request})
  
     return lookfor;
   }
 
-  async justAddToDB(request:faceData):Promise<FaceData>{
-    let today= new Date()
+  async justAddToDB(request:faceData):Promise<Fregis>{
+    console.log(request.recId)
     const payload={
       recId :request.recId,
       criminalId:request.criminalId,
       recordName:request.recordName,
       Department : request.Department
     }
-    const result =await this.face.create(request)
-    
-    return result ;
+    return  this.faceModel.create(request) 
   }
-
+  async getfromDBCamera(){
+    const result= this.camera.find()
+    return result
+  }
 
 }

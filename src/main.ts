@@ -4,8 +4,8 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
-  console.log("App started on 3000")
+  await app.listen(3002);
+  console.log("App started on 3002")
   app.connectMicroservice<MicroserviceOptions>({
       transport: Transport.RMQ,
       options: {

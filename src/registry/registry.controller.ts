@@ -9,7 +9,9 @@ import { Registration } from 'src/schema/reg.schema';
 import { PythonRequestDto } from 'src/dto/pythonapi.dto';
 import { combineLatest, map } from 'rxjs';
 import { faceData } from 'src/dto/face.dto';
-import { FaceData } from 'src/schema/facedata.schema';
+import { Fregis } from 'src/schema/facedata.schema';
+import { newfaceDto } from 'src/dto/newFace.dto';
+import { Facify } from 'src/schema/newface.schema';
 
 @Controller('api')//changes made here 'registry'
 export class RegistryController {
@@ -27,6 +29,24 @@ export class RegistryController {
         return this.service.addNewDataToDatabase(request)
      
       }
+      @Post('/newFace')
+      async newFace(@Body() request:newfaceDto):Promise<Facify>{
+        return this.service.addNewFace(request);
+      }
+
+      @Post('/newFaceDatabase')
+      async newFaceDb( ){
+        return this.service.addNewFaceDb();
+      }
+      
+      
+
+      @Post('/facerecog')
+      async getdataintodb(@Body() request :faceData):Promise<Fregis>{
+        console.log(request)
+        const result =await this.service.justAddToDB(request)
+        return result ;  
+      }
 
       @Post('/findcar')
       findVehicle(@Body() request:numberplate){
@@ -40,9 +60,11 @@ export class RegistryController {
         return displayAll;
       }
 
+    
+
       @Post('/criminalDatabase')
-      async findCriminal(@Body() RCstatus:boolean){
-        const criminal =this.service.criminalDataSearch({RCstatus:false})
+      async findCriminal(@Body() rcStatus:boolean){
+        const criminal =this.service.criminalDataSearch({rcStatus:false})
         return criminal;
       }
       @Get('/getnumbercriminal')
@@ -83,16 +105,18 @@ export class RegistryController {
       }
 
       @Post('/camerafindings')
-      async getcamerasearch(@Body() request :numberplate){
-        const search =this.service.findOneFromCameraInput(request);
+      async getcamerasearch( request :numberplate){
+        const search =await this.service.findOneFromCameraInput(request);
         return search;
       }
 
-      @Post('/facerecog')
-      async getdataintodb(@Body() request :faceData):Promise<FaceData>{
-        const result =await this.service.justAddToDB(request)
-        return result ;  
+    
+      
+      @Post('/getDBCameraAll')
+      async cameraAll(){
+        return this.service.getfromDBCamera()
       }
+
 
 
     

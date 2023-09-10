@@ -1,10 +1,9 @@
 import { Prop, SchemaFactory } from "@nestjs/mongoose";
 
-export class FaceData{
+export class Fregis{
 
     @Prop()
     recId :string;
-    
     
     @Prop()
     criminalId :string;
@@ -17,6 +16,6 @@ export class FaceData{
 }
 
 
-export const FaceDataScehma = SchemaFactory.createForClass(FaceData);
-export const FACEDATA_MODEL = FaceData.name;
-export type FaceDataDocument = FaceData & Document;
+export const FaceDataScehma = SchemaFactory.createForClass(Fregis);
+export const FACEDATA_MODEL =Fregis.name;
+export type FaceDataDocument = Fregis & Document;
